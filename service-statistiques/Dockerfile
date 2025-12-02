@@ -1,7 +1,7 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 8080
-CMD ["python", "app.py"]
+COPY app_stats.py .
+EXPOSE 5000
+CMD ["python", "app_stats.py"]

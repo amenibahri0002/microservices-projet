@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: CI/CD Pipeline
 
 on:
@@ -37,3 +38,59 @@ jobs:
           script: |
             kubectl rollout restart deployment monservice
             kubectl rollout restart deployment statistique
+=======
+name: CI/CD Microservices
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Configurer Docker dans GitHub Actions
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # Build image Calculatrice
+    - name: Build Docker image calculatrice
+      run: |
+        docker build -t calculatrice:v2 ./service-calculatrice
+
+    # Build image Statistiques
+    - name: Build Docker image statistiques
+      run: |
+        docker build -t statistiques:v1 ./service-statistiques
+
+    # (Optionnel) Push sur Docker Hub si tu veux versionner tes images
+    - name: Login Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Push Calculatrice
+      run: docker tag calculatrice:v2 <dockerhub_user>/calculatrice:v2 && docker push <dockerhub_user>/calculatrice:v2
+
+    - name: Push Statistiques
+      run: docker tag statistiques:v1 <dockerhub_user>/statistiques:v1 && docker push <dockerhub_user>/statistiques:v1
+
+    # Déploiement sur Kubernetes
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f k8s/calculatrice-deployment.yaml
+        kubectl apply -f k8s/calculatrice-service.yaml
+        kubectl apply -f k8s/statistiques-deployment.yaml
+        kubectl apply -f k8s/statistiques-service.yaml
+>>>>>>> 3453bed (Save project before shutdown)

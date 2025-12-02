@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deploy-calculatrice
+  name: statistiques-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: calculatrice
+      app: statistiques
   template:
     metadata:
       labels:
-        app: calculatrice
+        app: statistiques
     spec:
       containers:
-      - name: calculatrice
-        image: calculatrice:v1
+      - name: statistiques
+        image: statistiques:v1
         ports:
         - containerPort: 5000

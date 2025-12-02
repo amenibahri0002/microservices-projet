@@ -1,0 +1,10 @@
+version: "3"
+services:
+  calculatrice:
+    build: ./service-calculatrice
+    ports:
+      - "8000:5000"
+  statistiques:
+    build: ./service-statistiques
+    ports:
+      - "8001:5000"

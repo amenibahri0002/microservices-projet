@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /add
+        pathType: Prefix
+        backend:
+          service:
+            name: monservice
+            port:
+              number: 8080
+      - path: /mean
+        pathType: Prefix
+        backend:
+          service:
+            name: statistique
+            port:
+              number: 8080

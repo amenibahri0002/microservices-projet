@@ -1,36 +1,40 @@
 from flask import Flask, request, jsonify
+from prometheus_client import Counter, generate_latest
 
 app = Flask(__name__)
+REQUESTS = Counter("calculatrice_requests_total", "Total requests to calculator endpoints")
 
-@app.route('/')
-def home():
-    return jsonify({"message": "Microservice Calculatrice opérationnel 🚀"})
-
-@app.route('/add', methods=['GET'])
+@app.route("/add")
 def add():
-    x = float(request.args.get('x', 0))
-    y = float(request.args.get('y', 0))
+    REQUESTS.inc()
+    x = float(request.args.get("x", 0))
+    y = float(request.args.get("y", 0))
     return jsonify({"result": x + y})
 
-@app.route('/sub', methods=['GET'])
+@app.route("/sub")
 def sub():
-    x = float(request.args.get('x', 0))
-    y = float(request.args.get('y', 0))
+    REQUESTS.inc()
+    x = float(request.args.get("x", 0))
+    y = float(request.args.get("y", 0))
     return jsonify({"result": x - y})
 
-@app.route('/mul', methods=['GET'])
+@app.route("/mul")
 def mul():
-    x = float(request.args.get('x', 0))
-    y = float(request.args.get('y', 0))
+    REQUESTS.inc()
+    x = float(request.args.get("x", 0))
+    y = float(request.args.get("y", 0))
     return jsonify({"result": x * y})
 
-@app.route('/div', methods=['GET'])
+@app.route("/div")
 def div():
-    x = float(request.args.get('x', 1))
-    y = float(request.args.get('y', 1))
-    if y == 0:
-        return jsonify({"error": "Division par zéro interdite"}), 400
-    return jsonify({"result": x / y})
+    REQUESTS.inc()
+    x = float(request.args.get("x", 0))
+    y = float(request.args.get("y", 1))
+    return jsonify({"result": x / y if y != 0 else None})
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+@app.route("/metrics")
+def metrics():
+    return generate_latest(), 200, {"Content-Type": "text/plain; charset=utf-8"}
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
